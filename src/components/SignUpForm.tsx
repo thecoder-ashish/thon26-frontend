@@ -40,8 +40,8 @@ const FormSchema = z.object({
   email: z.string().email({
     message: "Email must be a valid email address.",
   }),
-  roll_no: z.string().min(6, {
-    message: "Name must be at least 6 characters.",
+  roll_no: z.string().regex(/^202[56][A-Za-z0-9]+$/i, {
+    message: "Roll number must start with 2025 or 2026 (e.g. 2026UCA0001 or 2025UCA0001).",
   }),
   branch: z.string(),
 })

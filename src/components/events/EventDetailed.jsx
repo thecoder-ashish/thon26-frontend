@@ -327,7 +327,7 @@ const EventDetails = () => {
               Join the official NSUTTHON 2026 WhatsApp group for instant announcements & support.
             </p>
             <a
-              href="https://chat.whatsapp.com/IOKnp0w5GhV7wopGc8StZs"
+              href="https://chat.whatsapp.com/DpN0lPgr6OREEsYObnPapY?s=sw&p=a&ilr=4"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-xs transition-colors shadow-sm"

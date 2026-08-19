@@ -16,6 +16,7 @@ function RegisterForm({ numberOfMembers, teamName }) {
   const navigate = useNavigate();
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const phoneNumberPattern = /^\d{10}$/; // Validates 10-digit phone number
+  const rollNumberPattern = /^202[56][A-Za-z0-9]+$/; // Validates 2025 and 2026 roll numbers
 
   const getInitialMembers = () => {
     const savedMembers = localStorage.getItem("members");
@@ -86,6 +87,16 @@ function RegisterForm({ numberOfMembers, teamName }) {
           variant: "destructive",
           title: "Incomplete Details",
           description: `Please enter the roll number for ${member.name}.`,
+        });
+        return;
+      }
+
+      // Validate roll number format (2025 or 2026)
+      if (!rollNumberPattern.test(member.rollno.trim())) {
+        toast({
+          variant: "destructive",
+          title: "Invalid Roll Number",
+          description: `Roll number for ${member.name} must start with 2025 or 2026 (e.g. 2026UCA0001 or 2025UCA0001).`,
         });
         return;
       }

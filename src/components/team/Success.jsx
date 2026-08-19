@@ -93,7 +93,7 @@ function SuccessPage() {
         </p>
         <div className="pt-2">
           <a
-            href="https://chat.whatsapp.com/IOKnp0w5GhV7wopGc8StZs"
+            href="https://chat.whatsapp.com/DpN0lPgr6OREEsYObnPapY?s=sw&p=a&ilr=4"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block w-full sm:w-auto"
