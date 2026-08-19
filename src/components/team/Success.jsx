@@ -80,29 +80,62 @@ function SuccessPage() {
         </p>
       </div>
 
-      {/* Official WhatsApp Community Card */}
-      <div className="rounded-3xl border bg-card/60 backdrop-blur-md p-6 sm:p-8 space-y-4 text-center max-w-2xl mx-auto shadow-md">
-        <div className="inline-flex items-center justify-center p-3 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
-          <MessageCircle className="h-8 w-8" />
+      {/* Action Cards (WhatsApp & Recruitment) */}
+      <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {/* Official WhatsApp Community Card */}
+        <div className="rounded-3xl border bg-card/60 backdrop-blur-md p-6 sm:p-8 space-y-4 text-center shadow-md flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="inline-flex items-center justify-center p-3 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+              <MessageCircle className="h-8 w-8" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black font-raleway tracking-tight text-foreground">
+              WhatsApp Community
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Stay updated with real-time announcements, event schedules, scoring alerts, and support throughout NSUTTHON 2026.
+            </p>
+          </div>
+          <div className="pt-4">
+            <a
+              href="https://chat.whatsapp.com/DpN0lPgr6OREEsYObnPapY?s=sw&p=a&ilr=4"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full"
+            >
+              <Button className="w-full px-6 py-6 text-base font-bold bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2 shadow-lg hover:shadow-green-500/20 transition-all">
+                <MessageCircle className="h-5 w-5" />
+                <span>Join WhatsApp Group</span>
+              </Button>
+            </a>
+          </div>
         </div>
-        <h2 className="text-2xl font-black font-raleway tracking-tight text-foreground">
-          Join Official WhatsApp Community
-        </h2>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-          Stay updated with real-time announcements, event schedules, scoring alerts, and organizers support throughout NSUTTHON 2026.
-        </p>
-        <div className="pt-2">
-          <a
-            href="https://chat.whatsapp.com/DpN0lPgr6OREEsYObnPapY?s=sw&p=a&ilr=4"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block w-full sm:w-auto"
-          >
-            <Button className="w-full sm:w-auto px-8 py-6 text-base font-bold bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2 shadow-lg hover:shadow-green-500/20 transition-all">
-              <MessageCircle className="h-5 w-5" />
-              <span>Join WhatsApp Group</span>
-            </Button>
-          </a>
+
+        {/* Crosslinks Recruitment Card */}
+        <div className="rounded-3xl border bg-card/60 backdrop-blur-md p-6 sm:p-8 space-y-4 text-center shadow-md flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="inline-flex items-center justify-center p-3 rounded-full bg-primary/10 text-primary border border-primary/20">
+              <Sparkles className="h-8 w-8" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black font-raleway tracking-tight text-foreground">
+              Join Team Crosslinks
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Want to build, organize, and lead flagship campus events like NSUTTHON? Applications for Crosslinks Recruitment 2026 are now open!
+            </p>
+          </div>
+          <div className="pt-4">
+            <a
+              href="https://recruitment.crosslinksnsut.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full"
+            >
+              <Button variant="outline" className="w-full px-6 py-6 text-base font-bold flex items-center justify-center gap-2 border-2 hover:bg-muted transition-all">
+                <Sparkles className="h-5 w-5" />
+                <span>Apply for Recruitment</span>
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
 
