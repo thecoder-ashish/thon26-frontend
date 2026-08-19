@@ -80,7 +80,7 @@ const EventGrid = ({ openTab }) => {
               src={
                 event.banner_url_1_compressed ||
                 event.banner_url_1 ||
-                "https://storage.googleapis.com/nsutthon/default_image.jpg"
+                "/posters/default.png"
               }
               alt={event.event_name}
               className="w-full h-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
@@ -89,7 +89,7 @@ const EventGrid = ({ openTab }) => {
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src =
-                  "https://storage.googleapis.com/nsutthon/default_image.jpg";
+                  "/posters/default.png";
               }}
             />
 

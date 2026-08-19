@@ -92,7 +92,7 @@ const EventDetails = () => {
 
   const bannerImage =
     eventDetails.banner_url_1 ||
-    "https://storage.googleapis.com/nsutthon/default_image.jpg";
+    "/posters/default.png";
 
   if (isLoading) {
     return (
@@ -138,7 +138,7 @@ const EventDetails = () => {
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src =
-                  "https://storage.googleapis.com/nsutthon/default_image.jpg";
+                  "/posters/default.png";
               }}
             />
           </div>
@@ -214,7 +214,7 @@ const EventDetails = () => {
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src =
-                "https://storage.googleapis.com/nsutthon/default_image.jpg";
+                "/posters/default.png";
             }}
           />
         </div>
