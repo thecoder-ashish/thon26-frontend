@@ -135,6 +135,11 @@ const EventDetails = () => {
               alt={eventDetails.event_name || "Event Poster"}
               className="w-full h-full aspect-square object-cover"
               style={{ aspectRatio: "1 / 1" }}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src =
+                  "https://storage.googleapis.com/nsutthon/default_image.jpg";
+              }}
             />
           </div>
 
@@ -159,7 +164,7 @@ const EventDetails = () => {
               </>
             ) : (
               <>
-                <Share2 className="h-3.5 w-3.5" /> Share Event Link
+                <Share2 className="h-3.5 w-3.5" /> Share Event
               </>
             )}
           </button>
@@ -206,6 +211,11 @@ const EventDetails = () => {
             alt={eventDetails.event_name || "Event Poster"}
             className="w-full h-full aspect-square object-cover"
             style={{ aspectRatio: "1 / 1" }}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src =
+                "https://storage.googleapis.com/nsutthon/default_image.jpg";
+            }}
           />
         </div>
 

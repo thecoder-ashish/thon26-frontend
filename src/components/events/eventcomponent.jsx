@@ -78,16 +78,19 @@ const EventGrid = ({ openTab }) => {
           >
             <img
               src={
-                event.banner_url_1_compressed
-                  ? event.banner_url_1_compressed
-                  : event.banner_url_1
-                  ? event.banner_url_1
-                  : "https://storage.googleapis.com/nsutthon/default_image-x2XbUUFkfAWKHiYyrZpNko-compressed.jpg"
+                event.banner_url_1_compressed ||
+                event.banner_url_1 ||
+                "https://storage.googleapis.com/nsutthon/default_image.jpg"
               }
               alt={event.event_name}
               className="w-full h-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
               style={{ aspectRatio: "1 / 1" }}
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src =
+                  "https://storage.googleapis.com/nsutthon/default_image.jpg";
+              }}
             />
 
             {/* Time Pill Badge */}
