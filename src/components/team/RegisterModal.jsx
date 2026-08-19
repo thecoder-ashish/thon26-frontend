@@ -16,7 +16,6 @@ function RegisterForm({ numberOfMembers, teamName }) {
   const navigate = useNavigate();
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const phoneNumberPattern = /^\d{10}$/; // Validates 10-digit phone number
-  const rollNumberPattern = /^202[56][A-Za-z0-9]+$/; // Validates 2025 and 2026 roll numbers
 
   const getInitialMembers = () => {
     const savedMembers = localStorage.getItem("members");
@@ -68,15 +67,15 @@ function RegisterForm({ numberOfMembers, teamName }) {
     for (let i = 0; i < members.length; i++) {
       const member = members[i] || {};
       const isLeader = i === 0;
-      const isSecondaryContact = i === 1;
-      const requiresContact = isLeader || isSecondaryContact;
 
       // Name required for all
       if (!member.name || !member.name.trim()) {
         toast({
           variant: "destructive",
           title: "Incomplete Details",
-          description: `Please enter the name for Member ${i + 1}.`,
+          description: `Please enter the name for ${
+            isLeader ? "Team Leader" : `Member ${i + 1}`
+          }.`,
         });
         return;
       }
@@ -91,25 +90,13 @@ function RegisterForm({ numberOfMembers, teamName }) {
         return;
       }
 
-      // Validate roll number format (2025 or 2026)
-      if (!rollNumberPattern.test(member.rollno.trim())) {
-        toast({
-          variant: "destructive",
-          title: "Invalid Roll Number",
-          description: `Roll number for ${member.name} must start with 2025 or 2026 (e.g. 2026UCA0001 or 2025UCA0001).`,
-        });
-        return;
-      }
-
-      // Leader and Secondary Contact require Email & Phone
-      if (requiresContact) {
+      // ONLY Team Leader requires Email & Phone
+      if (isLeader) {
         if (!member.email || !member.email.trim()) {
           toast({
             variant: "destructive",
             title: "Incomplete Details",
-            description: `Please enter the email address for ${
-              isLeader ? "Team Leader" : "Contact 2"
-            } (${member.name}).`,
+            description: `Please enter the email address for Team Leader (${member.name}).`,
           });
           return;
         }
@@ -118,9 +105,7 @@ function RegisterForm({ numberOfMembers, teamName }) {
           toast({
             variant: "destructive",
             title: "Incomplete Details",
-            description: `Please enter the 10-digit phone number for ${
-              isLeader ? "Team Leader" : "Contact 2"
-            } (${member.name}).`,
+            description: `Please enter the 10-digit phone number for Team Leader (${member.name}).`,
           });
           return;
         }
@@ -129,7 +114,7 @@ function RegisterForm({ numberOfMembers, teamName }) {
           toast({
             variant: "destructive",
             title: "Invalid Email Format",
-            description: `Please enter a valid email address for ${member.name}.`,
+            description: `Please enter a valid email address for Team Leader (${member.name}).`,
           });
           return;
         }
@@ -138,14 +123,14 @@ function RegisterForm({ numberOfMembers, teamName }) {
           toast({
             variant: "destructive",
             title: "Invalid Phone Number",
-            description: `Ensure the phone number for ${member.name} is exactly 10 digits.`,
+            description: `Ensure the phone number for Team Leader (${member.name}) is exactly 10 digits.`,
           });
           return;
         }
       }
     }
 
-    // 3. Unique Roll Numbers Check
+    // 3. Unique Roll Numbers Check across all members
     const rollNumbers = members
       .map((m) => m?.rollno?.trim().toUpperCase())
       .filter(Boolean);
@@ -154,34 +139,6 @@ function RegisterForm({ numberOfMembers, teamName }) {
         variant: "destructive",
         title: "Duplicate Roll Numbers",
         description: "Each team member must have a unique roll number.",
-      });
-      return;
-    }
-
-    // 4. Unique Contact Emails Check
-    const contactEmails = members
-      .slice(0, 2)
-      .map((m) => m?.email?.trim().toLowerCase())
-      .filter(Boolean);
-    if (contactEmails.length > 1 && new Set(contactEmails).size !== contactEmails.length) {
-      toast({
-        variant: "destructive",
-        title: "Duplicate Contact Emails",
-        description: "Team Leader and Contact 2 must have distinct email addresses.",
-      });
-      return;
-    }
-
-    // 5. Unique Contact Phone Numbers Check
-    const contactPhones = members
-      .slice(0, 2)
-      .map((m) => m?.phone?.trim())
-      .filter(Boolean);
-    if (contactPhones.length > 1 && new Set(contactPhones).size !== contactPhones.length) {
-      toast({
-        variant: "destructive",
-        title: "Duplicate Contact Phones",
-        description: "Team Leader and Contact 2 must have distinct phone numbers.",
       });
       return;
     }
@@ -222,7 +179,9 @@ function RegisterForm({ numberOfMembers, teamName }) {
           toast({
             variant: "destructive",
             title: "Registration Failed",
-            description: error.response?.data?.error || "Server error while registering team.",
+            description:
+              error.response?.data?.error ||
+              "Server error while registering team.",
           });
           console.error("Error while registering:", error);
         });

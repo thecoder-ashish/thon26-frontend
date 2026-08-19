@@ -16,17 +16,15 @@ const RegisterBlock = forwardRef(
     const [rollno, setRollno] = useState(member.rollno || "");
 
     const isLeader = index === 1;
-    const isSecondaryContact = index === 2;
-    const requiresContact = isLeader || isSecondaryContact;
 
     useEffect(() => {
       saveMemberDetails({
         name,
-        email: requiresContact ? email : "",
-        phone: requiresContact ? phone : "",
+        email: isLeader ? email : "",
+        phone: isLeader ? phone : "",
         rollno,
       });
-    }, [name, email, phone, rollno, requiresContact]);
+    }, [name, email, phone, rollno, isLeader]);
 
     return (
       <div className="flex justify-between gap-2 h-full">
@@ -53,8 +51,6 @@ const RegisterBlock = forwardRef(
                 placeholder={
                   isLeader
                     ? "TEAM LEADER NAME"
-                    : isSecondaryContact
-                    ? "MEMBER 2 NAME"
                     : `MEMBER ${index} NAME`
                 }
                 onClick={() => setIsOpen(true)}
@@ -71,13 +67,6 @@ const RegisterBlock = forwardRef(
                   </span>
                 </div>
               )}
-              {isSecondaryContact && (
-                <div className="px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-md font-bold border border-foreground/30 bg-muted/40 text-foreground flex items-center justify-center shrink-0">
-                  <span className="font-mont font-extrabold text-[10px] sm:text-xs tracking-wide">
-                    CONTACT 2
-                  </span>
-                </div>
-              )}
             </div>
           </div>
 
@@ -89,18 +78,14 @@ const RegisterBlock = forwardRef(
           >
             <div className="flex">
               <div className="w-full pl-9 md:pl-14 space-y-2 md:mt-2 md:space-y-4">
-                {/* Contact Fields only for Leader and Secondary Contact */}
-                {requiresContact && (
+                {/* Contact Fields only for Team Leader */}
+                {isLeader && (
                   <>
                     <input
                       required
                       type="email"
                       maxLength="40"
-                      placeholder={
-                        isLeader
-                          ? "LEADER EMAIL"
-                          : "SECONDARY CONTACT EMAIL"
-                      }
+                      placeholder="LEADER EMAIL"
                       className="outline-none bg-transparent font-mont p-1 mt-2 font-bold text-lg md:text-xl w-full"
                       value={email}
                       onChange={(e) => setEmail(e.target.value.toUpperCase())}
@@ -108,11 +93,7 @@ const RegisterBlock = forwardRef(
                     <input
                       type="tel"
                       maxLength="10"
-                      placeholder={
-                        isLeader
-                          ? "LEADER PHONE NO"
-                          : "SECONDARY CONTACT PHONE NO"
-                      }
+                      placeholder="LEADER PHONE NO"
                       className="outline-none bg-transparent p-1 font-bold w-full text-lg md:text-xl"
                       value={phone}
                       onChange={(e) =>

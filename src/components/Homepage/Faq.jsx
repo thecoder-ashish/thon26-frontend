@@ -105,13 +105,25 @@ export function Faq({ showAll }) {
         id: "item-14",
         question: "How to register for a particular event?",
         answer:
-          "Once you register your team on NSUTTHON's website, you can view event details and register for individual society events directly through the Events page.",
+          "To participate in a specific society's event, visit the NSUTTHON website and browse through the event listings. Find the event conducted by the society you wish to participate in and complete the registration through the form provided on its respective event page.",
       },
       {
         id: "item-15",
         question: "Can a team take part in two events happening at the same time?",
         answer:
           "Yes, different members of a team can take part in two events simultaneously provided they have registered.",
+      },
+      {
+        id: "item-16",
+        question: "What is the average duration of an event?",
+        answer:
+          "The average duration of an event is expected to be around 2 hours, with a maximum permissible duration of 3 hours.",
+      },
+      {
+        id: "item-17",
+        question: "What is the advantage of owning Crosslinks cards ?",
+        answer:
+          "The Crosslinks cards have the advantage of earning extra points per team provided that each member of the team has a full deck containing all the 4 colours- blue, black, white, pink.",
       },
     ],
     []
