@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import TimeComponent from "../admin/Event/EditTimeFormat2";
 import { useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
-import { getBackendUrl } from "@/lib/api";
+import { getBackendUrl, getPosterUrl } from "@/lib/api";
 
 const EventGrid = ({ openTab }) => {
   const navigate = useNavigate();
@@ -77,11 +77,9 @@ const EventGrid = ({ openTab }) => {
             style={{ aspectRatio: "1 / 1" }}
           >
             <img
-              src={
-                event.banner_url_1_compressed ||
-                event.banner_url_1 ||
-                "/posters/default.png"
-              }
+              src={getPosterUrl(
+                event.banner_url_1_compressed || event.banner_url_1
+              )}
               alt={event.event_name}
               className="w-full h-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
               style={{ aspectRatio: "1 / 1" }}

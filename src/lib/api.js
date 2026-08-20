@@ -18,3 +18,21 @@ export const getBackendUrl = () => {
 
 export const BACKEND_URL = getBackendUrl();
 export default BACKEND_URL;
+
+export const getPosterUrl = (url) => {
+  if (!url) return "/posters/default.png";
+  
+  if (typeof url === "string") {
+    if (url.startsWith("/poster/")) {
+      return "/posters/" + url.slice(8);
+    }
+    if (url.startsWith("poster/")) {
+      return "/posters/" + url.slice(7);
+    }
+    if (url.includes("/poster/")) {
+      return url.replace(/\/poster\//g, "/posters/");
+    }
+  }
+  
+  return url;
+};

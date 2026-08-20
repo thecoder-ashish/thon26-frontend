@@ -17,7 +17,7 @@ import LogoWhite from "../Homepage/Logowhite";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
-import { getBackendUrl } from "@/lib/api";
+import { getBackendUrl, getPosterUrl } from "@/lib/api";
 
 const EventDetails = () => {
   const location = useLocation();
@@ -90,9 +90,9 @@ const EventDetails = () => {
     }
   };
 
-  const bannerImage =
-    eventDetails.banner_url_1 ||
-    "/posters/default.png";
+  const bannerImage = getPosterUrl(
+    eventDetails.banner_url_1_compressed || eventDetails.banner_url_1
+  );
 
   if (isLoading) {
     return (
