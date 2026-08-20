@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import TimeComponent from "../admin/Event/EditTimeFormat2";
 import { useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
-import { getBackendUrl, getPosterUrl } from "@/lib/api";
+import { getBackendUrl } from "@/lib/api";
 
 const EventGrid = ({ openTab }) => {
   const navigate = useNavigate();
@@ -77,17 +77,32 @@ const EventGrid = ({ openTab }) => {
             style={{ aspectRatio: "1 / 1" }}
           >
             <img
-              src={getPosterUrl(
-                event.banner_url_1_compressed || event.banner_url_1
-              )}
+              src={
+                (event.banner_url_1_compressed && event.banner_url_1_compressed.startsWith("posters/") ? "/" + event.banner_url_1_compressed : event.banner_url_1_compressed) ||
+                (event.banner_url_1 && event.banner_url_1.startsWith("posters/") ? "/" + event.banner_url_1 : event.banner_url_1) ||
+                "/posters/default.png"
+              }
               alt={event.event_name}
               className="w-full h-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
               style={{ aspectRatio: "1 / 1" }}
               loading="lazy"
+              data-tried-original="false"
               onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src =
-                  "/posters/default.png";
+                const originalUrl = event.banner_url_1 && event.banner_url_1.startsWith("posters/") ? "/" + event.banner_url_1 : event.banner_url_1;
+                const compressedUrl = event.banner_url_1_compressed && event.banner_url_1_compressed.startsWith("posters/") ? "/" + event.banner_url_1_compressed : event.banner_url_1_compressed;
+                
+                if (
+                  e.currentTarget.getAttribute("data-tried-original") === "false" &&
+                  compressedUrl &&
+                  originalUrl &&
+                  originalUrl !== compressedUrl
+                ) {
+                  e.currentTarget.setAttribute("data-tried-original", "true");
+                  e.currentTarget.src = originalUrl;
+                } else {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/posters/default.png";
+                }
               }}
             />
 

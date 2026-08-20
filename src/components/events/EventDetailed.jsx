@@ -17,7 +17,7 @@ import LogoWhite from "../Homepage/Logowhite";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
-import { getBackendUrl, getPosterUrl } from "@/lib/api";
+import { getBackendUrl } from "@/lib/api";
 
 const EventDetails = () => {
   const location = useLocation();
@@ -90,9 +90,15 @@ const EventDetails = () => {
     }
   };
 
-  const bannerImage = getPosterUrl(
-    eventDetails.banner_url_1_compressed || eventDetails.banner_url_1
-  );
+  const compressedUrl = eventDetails.banner_url_1_compressed && eventDetails.banner_url_1_compressed.startsWith("posters/")
+    ? "/" + eventDetails.banner_url_1_compressed
+    : eventDetails.banner_url_1_compressed;
+
+  const originalUrl = eventDetails.banner_url_1 && eventDetails.banner_url_1.startsWith("posters/")
+    ? "/" + eventDetails.banner_url_1
+    : eventDetails.banner_url_1;
+
+  const bannerImage = compressedUrl || originalUrl || "/posters/default.png";
 
   if (isLoading) {
     return (
@@ -135,10 +141,20 @@ const EventDetails = () => {
               alt={eventDetails.event_name || "Event Poster"}
               className="w-full h-full aspect-square object-cover"
               style={{ aspectRatio: "1 / 1" }}
+              data-tried-original="false"
               onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src =
-                  "/posters/default.png";
+                if (
+                  e.currentTarget.getAttribute("data-tried-original") === "false" &&
+                  compressedUrl &&
+                  originalUrl &&
+                  originalUrl !== compressedUrl
+                ) {
+                  e.currentTarget.setAttribute("data-tried-original", "true");
+                  e.currentTarget.src = originalUrl;
+                } else {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/posters/default.png";
+                }
               }}
             />
           </div>
@@ -211,10 +227,20 @@ const EventDetails = () => {
             alt={eventDetails.event_name || "Event Poster"}
             className="w-full h-full aspect-square object-cover"
             style={{ aspectRatio: "1 / 1" }}
+            data-tried-original="false"
             onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src =
-                "/posters/default.png";
+              if (
+                e.currentTarget.getAttribute("data-tried-original") === "false" &&
+                compressedUrl &&
+                originalUrl &&
+                originalUrl !== compressedUrl
+              ) {
+                e.currentTarget.setAttribute("data-tried-original", "true");
+                e.currentTarget.src = originalUrl;
+              } else {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/posters/default.png";
+              }
             }}
           />
         </div>
