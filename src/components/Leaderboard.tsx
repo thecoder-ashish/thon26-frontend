@@ -49,6 +49,12 @@ export function Leaderboard() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(true);
 
+  // Modal State for Roster Details
+  const [selectedTeam, setSelectedTeam] = React.useState<{ id: number; name: string } | null>(null);
+  const [membersList, setMembersList] = React.useState<any[]>([]);
+  const [isMembersLoading, setIsMembersLoading] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
+
   const sortedTeams = React.useMemo(() => {
     return [...teams].sort((a, b) => b.points - a.points);
   }, [teams]);
@@ -70,6 +76,24 @@ export function Leaderboard() {
   };
 
   React.useEffect(fetchTeamData, []);
+
+  const handleTeamClick = (teamId: number, teamName: string) => {
+    setSelectedTeam({ id: teamId, name: teamName });
+    setIsMembersLoading(true);
+    setShowModal(true);
+    const backendUrl = getBackendUrl();
+    axios
+      .get(`${backendUrl}/team-members/${teamId}`)
+      .then((response) => {
+        setMembersList(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching team members:", error);
+      })
+      .finally(() => {
+        setIsMembersLoading(false);
+      });
+  };
 
   const columns: ColumnDef<Team>[] = [
     {
@@ -109,11 +133,18 @@ export function Leaderboard() {
           </Button>
         );
       },
-      cell: ({ row }) => (
-        <div className="font-bold uppercase tracking-wide text-sm sm:text-base">
-          {row.getValue("team_name")}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const teamName = row.getValue("team_name") as string;
+        const teamId = row.original.team_id;
+        return (
+          <div
+            className="font-bold uppercase tracking-wide text-sm sm:text-base cursor-pointer hover:underline hover:text-primary transition-colors inline-block"
+            onClick={() => handleTeamClick(teamId, teamName)}
+          >
+            {teamName}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "points",
@@ -270,6 +301,120 @@ export function Leaderboard() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Team Roster Popup Modal */}
+      {showModal && selectedTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          {/* Backdrop Blur */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            onClick={() => setShowModal(false)}
+          ></div>
+
+          {/* Modal Card */}
+          <div className="relative w-full max-w-md rounded-3xl border bg-card/95 p-6 sm:p-8 shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-200">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full border bg-background/80 hover:bg-background transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            {/* Modal Header */}
+            <div className="text-center space-y-1.5 pb-4 border-b">
+              <span className="text-[10px] font-black tracking-widest text-primary uppercase">
+                Team Standings Roster
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black font-raleway tracking-tight text-foreground uppercase truncate">
+                {selectedTeam.name}
+              </h2>
+              <p className="text-xs font-mono text-muted-foreground">
+                Team ID: #{selectedTeam.id}
+              </p>
+            </div>
+
+            {/* Modal Body */}
+            <div className="py-6 space-y-4">
+              {isMembersLoading ? (
+                <div className="flex flex-col items-center justify-center py-8 space-y-3">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-muted-foreground animate-pulse">
+                    Loading team roster...
+                  </p>
+                </div>
+              ) : membersList.length > 0 ? (
+                <div className="space-y-4">
+                  {/* Team Leader */}
+                  <div className="rounded-2xl border p-4 bg-primary/5 space-y-1">
+                    <span className="text-[10px] font-black tracking-wider text-primary uppercase block">
+                      Team Leader
+                    </span>
+                    <div className="flex justify-between items-center">
+                      <p className="font-extrabold font-raleway text-foreground text-sm sm:text-base">
+                        {membersList[0]?.member_name}
+                      </p>
+                      <p className="text-xs font-mono text-muted-foreground">
+                        {membersList[0]?.roll_no}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Teammates */}
+                  {membersList.slice(1).length > 0 && (
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-black tracking-wider text-muted-foreground uppercase block pl-1">
+                        Teammates
+                      </span>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {membersList.slice(1).map((member, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center rounded-xl border p-3.5 bg-card"
+                          >
+                            <p className="font-bold font-raleway text-foreground text-sm">
+                              {member.member_name}
+                            </p>
+                            <p className="text-xs font-mono text-muted-foreground">
+                              {member.roll_no}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-6 text-muted-foreground text-sm">
+                  No roster details found.
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-2">
+              <Button
+                onClick={() => setShowModal(false)}
+                className="w-full py-5 text-sm font-bold tracking-wide shadow-md"
+              >
+                Close Roster
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

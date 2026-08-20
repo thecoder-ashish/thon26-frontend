@@ -37,7 +37,7 @@ export function NavigationBar() {
 
       {/* Middle: Leaderboard and Events */}
       <div className="space-x-4 hidden items-center sm:flex">
-        <Link to="/leaderboard">
+        <Link to="/leaderboard" className="relative">
           <Button
             variant="outline"
             className="w-full font-raleway font-bold tracking-wide"
@@ -45,6 +45,10 @@ export function NavigationBar() {
           >
             LEADERBOARD
           </Button>
+          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+          </span>
         </Link>
         <Link to="/events">
           <Button
