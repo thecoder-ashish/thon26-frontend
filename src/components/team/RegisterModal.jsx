@@ -26,6 +26,24 @@ function RegisterForm({ numberOfMembers, teamName }) {
 
   const [members, setMembers] = useState(getInitialMembers());
 
+  // Dynamically load Google reCAPTCHA v3 script
+  useEffect(() => {
+    const siteKey =
+      import.meta.env.VITE_CAPTCHA_KEY ||
+      "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+    
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+      const badge = document.querySelector(".grecaptcha-badge");
+      if (badge) badge.remove();
+    };
+  }, []);
+
   // Save members to localStorage whenever the members state changes
   useEffect(() => {
     localStorage.setItem("members", JSON.stringify(members));
@@ -149,45 +167,74 @@ function RegisterForm({ numberOfMembers, teamName }) {
 
   const handlePopupResponse = (response) => {
     if (response) {
-      const teamDetails = {
-        teamName: teamName,
-        members: members,
-      };
+      const siteKey =
+        import.meta.env.VITE_CAPTCHA_KEY ||
+        "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
 
-      const backendUrl = getBackendUrl();
-      axios
-        .post(`${backendUrl}/register`, teamDetails)
-        .then((res) => {
-          if (res.status === 201) {
-            const { teamId: receivedTeamId } = res.data;
-            // Clear saved localStorage data on success
-            localStorage.removeItem("members");
-            localStorage.removeItem("teamName");
-            navigate("/success", {
-              state: { teamId: receivedTeamId, teamName },
+      if (window.grecaptcha) {
+        window.grecaptcha.ready(() => {
+          window.grecaptcha
+            .execute(siteKey, { action: "register_team" })
+            .then((token) => {
+              submitTeam(token);
+            })
+            .catch((err) => {
+              console.error("reCAPTCHA Error:", err);
+              toast({
+                variant: "destructive",
+                title: "Security Verification Failed",
+                description:
+                  "Failed to complete reCAPTCHA verification. Please try again.",
+              });
             });
-            setShowPopup(false);
-          } else {
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: "Something went wrong during registration.",
-            });
-          }
-        })
-        .catch((error) => {
-          toast({
-            variant: "destructive",
-            title: "Registration Failed",
-            description:
-              error.response?.data?.error ||
-              "Server error while registering team.",
-          });
-          console.error("Error while registering:", error);
         });
+      } else {
+        // Fallback in case captcha script failed to load
+        submitTeam(null);
+      }
     } else {
       setShowPopup(false);
     }
+  };
+
+  const submitTeam = (recaptchaToken) => {
+    const teamDetails = {
+      teamName: teamName,
+      members: members,
+      recaptchaToken: recaptchaToken,
+    };
+
+    const backendUrl = getBackendUrl();
+    axios
+      .post(`${backendUrl}/register`, teamDetails)
+      .then((res) => {
+        if (res.status === 201) {
+          const { teamId: receivedTeamId } = res.data;
+          // Clear saved localStorage data on success
+          localStorage.removeItem("members");
+          localStorage.removeItem("teamName");
+          navigate("/success", {
+            state: { teamId: receivedTeamId, teamName },
+          });
+          setShowPopup(false);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Something went wrong during registration.",
+          });
+        }
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Registration Failed",
+          description:
+            error.response?.data?.error ||
+            "Server error while registering team.",
+        });
+        console.error("Error while registering:", error);
+      });
   };
 
   return (
