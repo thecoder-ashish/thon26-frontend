@@ -80,7 +80,8 @@ const HeroSection = () => {
     "Shatranj",
     "QUIZ CLUB",
     "Crosslinks",
-    "CROSSLINKS"
+    "CROSSLINKS",
+    "YUVA"
 
     
   ];

@@ -23,6 +23,7 @@ import AdminPanel from "./pages/adminPanel";
 import EventDetails from "./components/events/EventDetailed";
 import SuccessPage from "./components/team/Success";
 import { HomePage } from "./pages/Homepage";
+import { Footer } from "./components/Footer";
 function App() {
   return (
 
@@ -70,6 +71,7 @@ function App() {
             />
            
           </Routes>
+          <Footer />
         </Router>
         </MarqueeProvider>
 
