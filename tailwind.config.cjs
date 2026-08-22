@@ -96,7 +96,7 @@ module.exports = {
         },
         '@font-face': {
           fontFamily: 'Akira',
-          fontDisplay: 'block', 
+          fontDisplay: 'swap', 
           src: `url('/Akira.otf') format('opentype')`, // Path to your Akira font
         },
         '@font-face': {
