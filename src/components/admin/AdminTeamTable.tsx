@@ -48,15 +48,11 @@ export type Team = {
   team_name: string
 }
 
-// const sortedData = data.sort((a, b) => b.points - a.points);
-
-
 export function AdminTeamTable() {
   const [teams, setTeams] = React.useState<Team[]>([]); // To store the fetched data
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [isDownloading, setIsDownloading] = React.useState(false);  // new state to manage download status
 
-  
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -64,20 +60,25 @@ export function AdminTeamTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   
+  // Sort by points descending, break ties with team_id ascending (#1001 first)
   const sortedTeams = React.useMemo(() => {
-    return [...teams].sort((a, b) => b.points - a.points);
+    return [...teams].sort((a, b) => {
+      if (b.points !== a.points) {
+        return b.points - a.points;
+      }
+      return a.team_id - b.team_id;
+    });
   }, [teams]);
 
-
-    // fetch team data function
-    const fetchTeamData = () => {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/teams`)
-          .then(response => {
-              setTeams(response.data);
-          })
-          .catch(error => {
-              console.error('Error fetching team data:', error);
-          });
+  // fetch team data function
+  const fetchTeamData = () => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/teams`)
+        .then(response => {
+            setTeams(response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching team data:', error);
+        });
   };
   
   const downloadExcelFile = () => {
@@ -95,7 +96,7 @@ export function AdminTeamTable() {
         console.error('Error downloading the file:', error);
         setIsDownloading(false);  // set downloading status to false in case of an error
     });
-};
+  };
 
   // Fetch data using Axios when the component mounts
   React.useEffect(fetchTeamData, []); // calling fetchTeamData directly in useEffect
@@ -158,9 +159,7 @@ export function AdminTeamTable() {
     </div>
     
     },
-    // defaultSortOrder: 'desc',
   },
-
 
   {
     accessorKey: "details",
@@ -180,9 +179,8 @@ export function AdminTeamTable() {
       </div> 
     },
   },
-  
-
 ]
+
   const table = useReactTable({
     data: sortedTeams, // Use the sortedTeams here
     columns,
@@ -288,13 +286,11 @@ export function AdminTeamTable() {
           </TableBody>
         </Table>
       </div>
-      <button className="mt-2 opacity-90" onClick={downloadExcelFile} disabled={isDownloading}>
+      <button className="mt-2 opacity-90 font-bold" onClick={downloadExcelFile} disabled={isDownloading}>
                 {isDownloading ? 'Downloading...' : 'Export to Excel'}
-            </button>
+      </button>
       <div className="flex items-center justify-end space-x-2 py-4">
       </div>
-
-      
     </div>
   )
 }

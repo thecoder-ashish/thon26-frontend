@@ -95,8 +95,14 @@ export function Leaderboard() {
   const isAdmin = user && (user.role === 'admin' || user.role === 'poc');
   const isUnlocked = isAdmin || timeLeft.isExpired;
 
+  // Sort by points descending, break ties with team_id ascending (e.g. #1001 first)
   const sortedTeams = React.useMemo(() => {
-    return [...teams].sort((a, b) => b.points - a.points);
+    return [...teams].sort((a, b) => {
+      if (b.points !== a.points) {
+        return b.points - a.points;
+      }
+      return a.team_id - b.team_id;
+    });
   }, [teams]);
 
   const visibleTeams = React.useMemo(() => {
@@ -378,7 +384,7 @@ export function Leaderboard() {
           <div className="absolute inset-x-0 bottom-0 top-[120px] flex flex-col items-center justify-center bg-gradient-to-t from-background via-background/95 to-background/30 backdrop-blur-[3px] p-6 text-center z-10 animate-in fade-in duration-300">
             <div className="flex flex-col items-center space-y-4 max-w-lg mx-auto">
               
-              {/* Circular High-Contrast Icon Badge (similar to registration circle buttons) */}
+              {/* Circular High-Contrast Icon Badge */}
               <div className="flex h-14 w-14 items-center justify-center rounded-full dark:bg-white bg-black dark:text-black text-white shadow-xl">
                 <Lock className="h-6 w-6" />
               </div>
@@ -415,7 +421,7 @@ export function Leaderboard() {
                 ))}
               </div>
 
-              {/* WhatsApp POC Link styled identically to registration page */}
+              {/* WhatsApp POC Link */}
               <a
                 href="https://wa.me/916206814632?text=Hi%20Ashish,%20I%20have%20a%20query%20regarding%20NSUTTHON%20leaderboard"
                 target="_blank"
