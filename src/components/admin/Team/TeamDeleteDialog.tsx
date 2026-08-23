@@ -1,4 +1,4 @@
-import { Trash } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,11 @@ export function TeamDeleteDialog({
   const { user } = useAuth();
 
   const deleteTeam = async () => {
-    const token = user?.token || localStorage.getItem("accessToken");
+    const token =
+      user?.token ||
+      localStorage.getItem("jwt") ||
+      localStorage.getItem("accessToken");
+
     if (!token) {
       toast({
         title: "Authentication Error",
@@ -42,19 +46,16 @@ export function TeamDeleteDialog({
 
     try {
       const backendUrl = getBackendUrl();
-      const response = await axios.delete(
-        `${backendUrl}/teams/${team_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.delete(`${backendUrl}/teams/${team_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200) {
         toast({
           title: "Team Deleted",
-          description: `Team "${team_name}" and its members were permanently removed.`,
+          description: `Team "${team_name}" (#${team_id}) and all its members were permanently removed.`,
         });
         onTeamDeleted();
       }
@@ -63,7 +64,9 @@ export function TeamDeleteDialog({
       toast({
         title: "Delete Failed",
         variant: "destructive",
-        description: error.response?.data?.message || "Server error while deleting team.",
+        description:
+          error.response?.data?.message ||
+          "Server error while deleting team.",
       });
     }
   };
@@ -72,28 +75,36 @@ export function TeamDeleteDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="h-8 w-8 p-0 border text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors ml-1.5"
+          className="h-8 w-8 p-0 text-red-500 border-red-500/30 hover:bg-red-500/10 hover:text-red-600 hover:border-red-500 transition-all ml-2"
           title={`Delete Team ${team_name}`}
         >
-          <Trash className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Team "{team_name}"?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action <strong>cannot be undone</strong>. This will permanently delete Team <strong>#{team_id} ({team_name})</strong> and <strong>all associated team members</strong> from the database.
+          <AlertDialogTitle className="text-red-500 flex items-center gap-2">
+            <Trash2 className="h-5 w-5" />
+            Delete Team "{team_name}"?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="space-y-2 pt-2 text-foreground/80">
+            <p>
+              This action <strong>cannot be undone</strong>.
+            </p>
+            <p>
+              This will permanently delete Team <strong>#{team_id} ({team_name})</strong> and <strong>all registered team members</strong> from the database.
+            </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={deleteTeam}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold"
           >
-            Delete Team
+            Confirm Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
