@@ -16,12 +16,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-
-import FileSaver from "file-saver";  
-
-import axios from 'axios';
-
-import { TeamDetailsDialog } from "./Team/TeamViewDetail"
+import axios from "axios"
+import FileSaver from 'file-saver';
+import { TeamDetailsDialog } from "./team/TeamViewDetail"
+import { TeamDeleteDialog } from "./team/TeamDeleteDialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -38,9 +36,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
 import { PointsUpdateDialog } from "./PointsUpdate"
-
+import { useAuth } from "../auth/auth"
+import { getBackendUrl } from "@/lib/api"
 
 export type Team = {
   team_id: number
@@ -49,9 +47,12 @@ export type Team = {
 }
 
 export function AdminTeamTable() {
-  const [teams, setTeams] = React.useState<Team[]>([]); // To store the fetched data
+  const { user } = useAuth();
+  const isPoc = user?.role === "poc";
+
+  const [teams, setTeams] = React.useState<Team[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [isDownloading, setIsDownloading] = React.useState(false);  // new state to manage download status
+  const [isDownloading, setIsDownloading] = React.useState(false);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -72,7 +73,8 @@ export function AdminTeamTable() {
 
   // fetch team data function
   const fetchTeamData = () => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/teams`)
+    const backendUrl = getBackendUrl();
+    axios.get(`${backendUrl}/teams`)
         .then(response => {
             setTeams(response.data);
         })
@@ -82,32 +84,35 @@ export function AdminTeamTable() {
   };
   
   const downloadExcelFile = () => {
-    setIsDownloading(true);  // set downloading status to true when starting download
+    setIsDownloading(true);
 
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/teams/export`, {
+    const backendUrl = getBackendUrl();
+    axios.get(`${backendUrl}/teams/export`, {
         responseType: 'blob'
     })
     .then(response => {
         const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         FileSaver.saveAs(blob, 'users-details.xlsx');
-        setIsDownloading(false);  // set downloading status to false when download is done
+        setIsDownloading(false);
     })
     .catch(error => {
         console.error('Error downloading the file:', error);
-        setIsDownloading(false);  // set downloading status to false in case of an error
+        setIsDownloading(false);
     });
   };
 
   // Fetch data using Axios when the component mounts
-  React.useEffect(fetchTeamData, []); // calling fetchTeamData directly in useEffect
+  React.useEffect(fetchTeamData, []);
 
   // Define the columns for the table
  const columns: ColumnDef<Team>[] = [
   {
     id: "index",
     header: "#",
-    cell: ({ row }) => {  return sortedTeams.findIndex(team => team.team_id === row.original.team_id) + 1;
-    },    enableSorting: false,
+    cell: ({ row }) => {
+      return sortedTeams.findIndex(team => team.team_id === row.original.team_id) + 1;
+    },
+    enableSorting: false,
     enableHiding: false,
   },
   {
@@ -115,9 +120,8 @@ export function AdminTeamTable() {
     header: ({ column }) => {
       return (
         <Button  
-          className="w-full text-right     "
+          className="w-full text-right"
           variant="ghost"
-          
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Team Name
@@ -125,12 +129,12 @@ export function AdminTeamTable() {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="uppercase  text-center ">{row.getValue("team_name")}</div>,
+    cell: ({ row }) => <div className="uppercase text-center font-bold">{row.getValue("team_name")}</div>,
   },
   {
     accessorKey: "team_id",
     header: "Team ID",
-    cell: ({ row }) => row.getValue("team_id"),
+    cell: ({ row }) => <div className="font-mono text-center">#{row.getValue("team_id")}</div>,
   },
   {
     accessorKey: "points",
@@ -142,47 +146,55 @@ export function AdminTeamTable() {
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Points
-          <CaretSortIcon className="ml-2  h-4 w-4"  /> 
+          <CaretSortIcon className="ml-2 h-4 w-4" /> 
         </Button>
       )
     },
     cell: ({ row }) => {
       const points = parseFloat(row.getValue("points"))
-      return <div className="flex items-center justify-center">
-      <div className="uppercase flex w-2 justify-end text-right items-center">{points}</div>
-      <PointsUpdateDialog 
-        points={row.getValue("points")} 
-        team_id={row.getValue("team_id")} 
-        team_name={row.getValue("team_name")}
-        onPointsUpdated={fetchTeamData} 
-      />
-    </div>
-    
+      return (
+        <div className="flex items-center justify-center">
+          <div className="uppercase flex w-2 justify-end text-right items-center font-mono font-bold">{points}</div>
+          <PointsUpdateDialog 
+            points={row.getValue("points")} 
+            team_id={row.getValue("team_id")} 
+            team_name={row.getValue("team_name")}
+            onPointsUpdated={fetchTeamData} 
+          />
+        </div>
+      )
     },
   },
-
   {
     accessorKey: "details",
-    header: ({  }) => {
+    header: () => {
       return (
-        <div
-          className=" flex justify-center"
-        >
-          Details
-          
+        <div className="flex justify-center font-bold">
+          Actions
         </div>
       )
     },
     cell: ({ row }) => {
-      return <div className="flex  items-center justify-center  text-center "> <TeamDetailsDialog team_id={row.getValue("team_id")} team_name={row.getValue("team_name")} />
-      
-      </div> 
+      const teamId = row.getValue("team_id") as number;
+      const teamName = row.getValue("team_name") as string;
+      return (
+        <div className="flex items-center justify-center text-center">
+          <TeamDetailsDialog team_id={String(teamId)} team_name={teamName} />
+          {!isPoc && (
+            <TeamDeleteDialog
+              team_id={teamId}
+              team_name={teamName}
+              onTeamDeleted={fetchTeamData}
+            />
+          )}
+        </div> 
+      )
     },
   },
 ]
 
   const table = useReactTable({
-    data: sortedTeams, // Use the sortedTeams here
+    data: sortedTeams,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
