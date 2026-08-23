@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Share2,
   Check,
+  Sparkles,
 } from "lucide-react";
 import LogoWhite from "../Homepage/Logowhite";
 import DOMPurify from "dompurify";
@@ -90,6 +91,10 @@ const EventDetails = () => {
     }
   };
 
+  const isSponsored =
+    eventDetails.society_name?.toLowerCase() === "sync" ||
+    eventDetails.event_name?.toLowerCase().includes("boards & bonds");
+
   const compressedUrl = eventDetails.banner_url_1_compressed && eventDetails.banner_url_1_compressed.startsWith("posters/")
     ? "/" + eventDetails.banner_url_1_compressed
     : eventDetails.banner_url_1_compressed;
@@ -133,7 +138,9 @@ const EventDetails = () => {
 
           {/* 1:1 Event Banner Image */}
           <div
-            className="w-full aspect-square rounded-2xl overflow-hidden shadow-xl border bg-card relative"
+            className={`w-full aspect-square rounded-2xl overflow-hidden shadow-xl border bg-card relative ${
+              isSponsored ? "border-amber-500/80 ring-2 ring-amber-500/40 shadow-amber-500/20" : ""
+            }`}
             style={{ aspectRatio: "1 / 1" }}
           >
             <img
@@ -160,8 +167,8 @@ const EventDetails = () => {
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              {eventDetails.society_name || "Official Society"}
+            <p className={`text-xs font-black uppercase tracking-wider ${isSponsored ? "text-amber-500" : "text-muted-foreground"}`}>
+              {isSponsored ? `⭐ Presented by ${eventDetails.society_name}` : (eventDetails.society_name || "Official Society")}
             </p>
             <p className="font-extrabold font-raleway text-lg leading-tight">
               Day {eventDetails.day_number || 1} • NSUTTHON 2026
@@ -219,7 +226,9 @@ const EventDetails = () => {
 
         {/* Mobile Image (1:1 aspect ratio) */}
         <div
-          className="lg:hidden w-full max-w-sm mx-auto aspect-square rounded-2xl overflow-hidden shadow-lg border"
+          className={`lg:hidden w-full max-w-sm mx-auto aspect-square rounded-2xl overflow-hidden shadow-lg border ${
+            isSponsored ? "border-amber-500/80 ring-2 ring-amber-500/40 shadow-amber-500/20" : ""
+          }`}
           style={{ aspectRatio: "1 / 1" }}
         >
           <img
@@ -252,8 +261,12 @@ const EventDetails = () => {
               Day {eventDetails.day_number || 1}
             </span>
             {eventDetails.society_name && (
-              <span className="text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                {eventDetails.society_name}
+              <span className={`text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border ${
+                isSponsored
+                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                  : "bg-primary/10 text-primary border-primary/20"
+              }`}>
+                {isSponsored ? `⭐ Presented by ${eventDetails.society_name}` : eventDetails.society_name}
               </span>
             )}
           </div>
@@ -266,7 +279,7 @@ const EventDetails = () => {
           <div className="flex flex-wrap items-center gap-4 sm:gap-8 pt-2 text-sm sm:text-base font-bold font-raleway text-muted-foreground">
             <div className="flex items-center gap-1.5 text-foreground">
               <Clock className="h-4 w-4 text-primary shrink-0" />
-              <TimeComponent timeValue={eventDetails.time} />
+              {isSponsored ? <span>10:00 AM - 4:00 PM</span> : <TimeComponent timeValue={eventDetails.time} />}
             </div>
 
             {eventDetails.venue && (
@@ -276,6 +289,23 @@ const EventDetails = () => {
               </div>
             )}
           </div>
+
+          {/* Sponsored 2X Multiplier Callout Card */}
+          {isSponsored && (
+            <div className="p-4 sm:p-5 rounded-2xl border border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-sm space-y-2 mt-4 shadow-sm">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm sm:text-base font-raleway uppercase tracking-wider">
+                <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+                <span>TITLE SPONSOR EVENT — UPTO 2X POINTS MULTIPLIER*</span>
+              </div>
+              <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
+                Participate in <strong>Boards & Bonds: Board Game Party</strong> to score bonus points towards the overall NSUTTHON 2026 leaderboard. 
+                Scores awarded in this event have <strong>upto a 2X multiplier</strong> applied to boost your team's festival standings!
+              </p>
+              <p className="text-[11px] text-muted-foreground italic pt-1 border-t border-amber-500/20">
+                *Terms &amp; Conditions apply. Point multipliers and extra scoring are determined based on overall tournament participation and match outcomes.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Registration CTA Button */}

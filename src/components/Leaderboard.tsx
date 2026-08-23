@@ -32,15 +32,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, Lock, MessageCircle } from "lucide-react";
+import { Search } from "lucide-react";
 import { getBackendUrl } from "@/lib/api";
-import { useAuth } from "@/components/auth/auth";
 
 export type Team = {
   team_id: number;
   points: number;
   team_name: string;
-  isLockedPlaceholder?: boolean;
 };
 
 export function Leaderboard() {
@@ -57,44 +55,6 @@ export function Leaderboard() {
   const [isMembersLoading, setIsMembersLoading] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
 
-  // Auth & Countdown States
-  const { user } = useAuth();
-  const [timeLeft, setTimeLeft] = React.useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    isExpired: false
-  });
-
-  React.useEffect(() => {
-    const target = new Date("2026-08-31T10:00:00+05:30").getTime();
-
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const difference = target - now;
-
-      if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true });
-        return;
-      }
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-      setTimeLeft({ days, hours, minutes, seconds, isExpired: false });
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const isAdmin = user && (user.role === 'admin' || user.role === 'poc');
-  const isUnlocked = isAdmin || timeLeft.isExpired;
-
   // Sort by points descending, break ties with team_id ascending (e.g. #1001 first)
   const sortedTeams = React.useMemo(() => {
     return [...teams].sort((a, b) => {
@@ -104,19 +64,6 @@ export function Leaderboard() {
       return a.team_id - b.team_id;
     });
   }, [teams]);
-
-  const visibleTeams = React.useMemo(() => {
-    if (isUnlocked) return sortedTeams;
-
-    const topTeams = sortedTeams.slice(0, 3);
-    const placeholders: Team[] = [
-      { team_id: 0, points: 0, team_name: "Locked Team 4", isLockedPlaceholder: true },
-      { team_id: 0, points: 0, team_name: "Locked Team 5", isLockedPlaceholder: true },
-      { team_id: 0, points: 0, team_name: "Locked Team 6", isLockedPlaceholder: true },
-      { team_id: 0, points: 0, team_name: "Locked Team 7", isLockedPlaceholder: true },
-    ];
-    return [...topTeams, ...placeholders];
-  }, [sortedTeams, isUnlocked]);
 
   const fetchTeamData = () => {
     setIsLoading(true);
@@ -159,10 +106,9 @@ export function Leaderboard() {
       id: "rank",
       header: () => <div className="text-center font-bold pl-2 font-raleway">#</div>,
       cell: ({ row }) => {
-        const index = visibleTeams.findIndex((t) => t === row.original);
-        const rank = index !== -1 ? index + 1 : row.index + 1;
+        const rank = sortedTeams.findIndex((t) => t.team_id === row.original.team_id) + 1;
         return (
-          <div className={`text-center font-extrabold text-sm pl-2 font-raleway ${row.original.isLockedPlaceholder ? "text-muted-foreground/30 select-none blur-[1px]" : ""}`}>
+          <div className="text-center font-extrabold text-sm pl-2 font-raleway">
             {rank}
           </div>
         );
@@ -174,11 +120,7 @@ export function Leaderboard() {
       header: () => <div className="text-center font-bold font-raleway">Team ID</div>,
       cell: ({ row }) => (
         <div className="text-center font-mono font-medium text-sm text-muted-foreground">
-          {row.original.isLockedPlaceholder ? (
-            <span className="text-muted-foreground/30 select-none blur-[1px]">••••</span>
-          ) : (
-            `#${row.getValue("team_id")}`
-          )}
+          #{row.getValue("team_id")}
         </div>
       ),
     },
@@ -198,13 +140,6 @@ export function Leaderboard() {
         );
       },
       cell: ({ row }) => {
-        if (row.original.isLockedPlaceholder) {
-          return (
-            <div className="font-extrabold tracking-wider text-sm sm:text-base text-muted-foreground/30 select-none blur-[2px] font-raleway uppercase">
-              ••••••••••••••••••••
-            </div>
-          );
-        }
         const teamName = row.getValue("team_name") as string;
         const teamId = row.original.team_id;
         return (
@@ -235,13 +170,6 @@ export function Leaderboard() {
         );
       },
       cell: ({ row }) => {
-        if (row.original.isLockedPlaceholder) {
-          return (
-            <div className="text-right font-extrabold text-base pr-4 font-mono text-muted-foreground/30 select-none blur-[1px]">
-              •••
-            </div>
-          );
-        }
         const points = parseFloat(row.getValue("points"));
         return (
           <div className="text-right font-extrabold text-base pr-4 font-mono">
@@ -253,7 +181,7 @@ export function Leaderboard() {
   ];
 
   const table = useReactTable({
-    data: visibleTeams,
+    data: sortedTeams,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -330,8 +258,8 @@ export function Leaderboard() {
         </DropdownMenu>
       </div>
 
-      {/* Leaderboard Table Container with Integrated Paywall */}
-      <div className="relative rounded-2xl border w-full overflow-hidden shadow-sm">
+      {/* Leaderboard Table */}
+      <div className="rounded-2xl border w-full overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -378,64 +306,6 @@ export function Leaderboard() {
             )}
           </TableBody>
         </Table>
-
-        {/* Integrated Paywall Overlay (Aligned with registration page style) */}
-        {!isUnlocked && !isLoading && (
-          <div className="absolute inset-x-0 bottom-0 top-[120px] flex flex-col items-center justify-center bg-gradient-to-t from-background via-background/95 to-background/30 backdrop-blur-[3px] p-6 text-center z-10 animate-in fade-in duration-300">
-            <div className="flex flex-col items-center space-y-4 max-w-lg mx-auto">
-              
-              {/* Circular High-Contrast Icon Badge */}
-              <div className="flex h-14 w-14 items-center justify-center rounded-full dark:bg-white bg-black dark:text-black text-white shadow-xl">
-                <Lock className="h-6 w-6" />
-              </div>
-
-              {/* Title & Subtitle */}
-              <div className="space-y-1.5">
-                <h3 className="text-xl sm:text-2xl font-extrabold font-raleway tracking-tight text-foreground uppercase">
-                  COMPLETE STANDINGS LOCKED
-                </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-md">
-                  Complete leaderboard will be unlocked after registrations close.
-                </p>
-              </div>
-
-              {/* Countdown Grid with clean rounded-2xl chips */}
-              <div className="grid grid-cols-4 gap-2.5 sm:gap-4 w-full max-w-sm pt-2">
-                {[
-                  { label: "DAYS", value: timeLeft.days },
-                  { label: "HOURS", value: timeLeft.hours },
-                  { label: "MINS", value: timeLeft.minutes },
-                  { label: "SECS", value: timeLeft.seconds },
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center justify-center rounded-2xl border border-border/80 bg-card/90 py-3 px-2 shadow-sm backdrop-blur-md"
-                  >
-                    <span className="text-xl sm:text-3xl font-extrabold font-raleway tracking-tight text-foreground">
-                      {String(item.value).padStart(2, "0")}
-                    </span>
-                    <span className="text-[9px] sm:text-[10px] font-black tracking-widest text-muted-foreground uppercase mt-0.5">
-                      {item.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* WhatsApp POC Link */}
-              <a
-                href="https://wa.me/916206814632?text=Hi%20Ashish,%20I%20have%20a%20query%20regarding%20NSUTTHON%20leaderboard"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors pt-2 group"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                <span>Queries? WhatsApp POC: <span className="font-bold text-foreground group-hover:underline">Ashish</span></span>
-                <MessageCircle className="h-3.5 w-3.5 text-green-500" />
-              </a>
-
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Team Roster Popup Modal */}
