@@ -295,14 +295,11 @@ const EventDetails = () => {
             <div className="p-4 sm:p-5 rounded-2xl border border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-sm space-y-2 mt-4 shadow-sm">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm sm:text-base font-raleway uppercase tracking-wider">
                 <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
-                <span>TITLE SPONSOR EVENT — UPTO 2X POINTS MULTIPLIER*</span>
+                <span>UPTO 2X POINTS MULTIPLIER*</span>
               </div>
               <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
                 Participate in <strong>Boards & Bonds: Board Game Party</strong> to score bonus points towards the overall NSUTTHON 2026 leaderboard. 
                 Scores awarded in this event have <strong>upto a 2X multiplier</strong> applied to boost your team's festival standings!
-              </p>
-              <p className="text-[11px] text-muted-foreground italic pt-1 border-t border-amber-500/20">
-                *Terms &amp; Conditions apply. Point multipliers and extra scoring are determined based on overall tournament participation and match outcomes.
               </p>
             </div>
           )}
