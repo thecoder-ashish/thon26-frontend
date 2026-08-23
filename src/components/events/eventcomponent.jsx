@@ -51,14 +51,10 @@ const EventGrid = ({ openTab }) => {
 
   const filteredEvents = React.useMemo(() => {
     const list = events.filter((event) => event.day_number === openTab);
-    // Pin sponsored / featured events (like Boards & Bonds / Sync) to the very top (#1)
+    // Pin featured event (Boards & Bonds) to the very top (#1)
     return list.sort((a, b) => {
-      const isASponsored =
-        a.society_name?.toLowerCase() === "sync" ||
-        a.event_name?.toLowerCase().includes("boards & bonds");
-      const isBSponsored =
-        b.society_name?.toLowerCase() === "sync" ||
-        b.event_name?.toLowerCase().includes("boards & bonds");
+      const isASponsored = a.event_name?.toLowerCase().includes("boards & bonds");
+      const isBSponsored = b.event_name?.toLowerCase().includes("boards & bonds");
 
       if (isASponsored && !isBSponsored) return -1;
       if (!isASponsored && isBSponsored) return 1;
@@ -79,9 +75,7 @@ const EventGrid = ({ openTab }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
       {filteredEvents.map((event) => {
-        const isSponsored =
-          event.society_name?.toLowerCase() === "sync" ||
-          event.event_name?.toLowerCase().includes("boards & bonds");
+        const isSponsored = event.event_name?.toLowerCase().includes("boards & bonds");
 
         return (
           <div
@@ -145,15 +139,15 @@ const EventGrid = ({ openTab }) => {
                 }}
               />
 
-              {/* Sponsored / 2X Points Badge */}
+              {/* Sponsored / 2X Points Badge (Positioned at bottom-left to prevent collision with top-right time pill) */}
               {isSponsored && (
-                <div className="absolute top-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
+                <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
                   <span>⭐</span>
                   <span>2X POINTS*</span>
                 </div>
               )}
 
-              {/* Time Pill Badge */}
+              {/* Time Pill Badge (Top-Right) */}
               <div className="absolute top-2.5 right-2.5 bg-black/75 dark:bg-black/85 text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border border-white/15 shadow-sm backdrop-blur-sm">
                 {isSponsored ? (
                   <span className="text-[10px] sm:text-xs font-raleway font-bold">
@@ -176,7 +170,7 @@ const EventGrid = ({ openTab }) => {
                   }`}
                 >
                   {isSponsored
-                    ? `⭐ Presented by ${event.society_name}`
+                    ? `⭐ Presented by ${event.society_name || "Crosslinks"}`
                     : event.society_name}
                 </p>
               )}

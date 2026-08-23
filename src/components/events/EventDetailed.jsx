@@ -91,9 +91,7 @@ const EventDetails = () => {
     }
   };
 
-  const isSponsored =
-    eventDetails.society_name?.toLowerCase() === "sync" ||
-    eventDetails.event_name?.toLowerCase().includes("boards & bonds");
+  const isSponsored = eventDetails.event_name?.toLowerCase().includes("boards & bonds");
 
   const compressedUrl = eventDetails.banner_url_1_compressed && eventDetails.banner_url_1_compressed.startsWith("posters/")
     ? "/" + eventDetails.banner_url_1_compressed
@@ -168,7 +166,7 @@ const EventDetails = () => {
 
           <div className="space-y-1">
             <p className={`text-xs font-black uppercase tracking-wider ${isSponsored ? "text-amber-500" : "text-muted-foreground"}`}>
-              {isSponsored ? `⭐ Presented by ${eventDetails.society_name}` : (eventDetails.society_name || "Official Society")}
+              {isSponsored ? `⭐ Presented by ${eventDetails.society_name || "Crosslinks"}` : (eventDetails.society_name || "Official Society")}
             </p>
             <p className="font-extrabold font-raleway text-lg leading-tight">
               Day {eventDetails.day_number || 1} • NSUTTHON 2026
@@ -266,7 +264,7 @@ const EventDetails = () => {
                   ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
                   : "bg-primary/10 text-primary border-primary/20"
               }`}>
-                {isSponsored ? `⭐ Presented by ${eventDetails.society_name}` : eventDetails.society_name}
+                {isSponsored ? `⭐ Presented by ${eventDetails.society_name || "Crosslinks"}` : eventDetails.society_name}
               </span>
             )}
           </div>
