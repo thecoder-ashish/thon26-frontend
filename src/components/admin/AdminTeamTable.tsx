@@ -180,7 +180,11 @@ export function AdminTeamTable() {
       const teamName = row.original.team_name;
       return (
         <div className="flex items-center justify-center text-center gap-1.5">
-          <TeamDetailsDialog team_id={String(teamId)} team_name={teamName} />
+          <TeamDetailsDialog
+            team_id={String(teamId)}
+            team_name={teamName}
+            onTeamDeleted={fetchTeamData}
+          />
           {!isPoc && (
             <TeamDeleteDialog
               team_id={teamId}
