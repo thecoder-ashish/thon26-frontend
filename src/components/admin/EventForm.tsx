@@ -176,7 +176,7 @@ export function EventsInputForm() {
       banner_url_1_compressed: banner1Response.compressed,
     };
 
-    const token = user?.token;
+    const token = user?.token || localStorage.getItem("jwt");
     if (!token) {
       toast({
         title: "Unauthorized",

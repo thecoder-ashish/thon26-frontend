@@ -226,7 +226,7 @@ export function EventsEditForm({ eventData, onEventUpdated }: EventsEditFormProp
       formDataWithImages.banner_url_1_compressed = bannerResponse.compressed;
     }
 
-    const token = user?.token;
+    const token = user?.token || localStorage.getItem("jwt");
     if (!token) {
       toast({
         title: "Unauthorized",

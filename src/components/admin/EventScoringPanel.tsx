@@ -200,7 +200,7 @@ export function EventScoringPanel() {
 
     setIsSubmitting(true);
     try {
-      const token = user?.token;
+      const token = user?.token || localStorage.getItem("jwt");
       const payload = {
         event_id: parseInt(selectedEventId, 10),
         first_team_id: first,

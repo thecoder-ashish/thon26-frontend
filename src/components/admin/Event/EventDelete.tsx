@@ -28,7 +28,8 @@ export function EventDeleteDialogBox({
 
   const deleteEvent = async () => {
     // Check if user and token exist
-    if (!user || !user.token) {
+    const token = user?.token || localStorage.getItem("jwt");
+    if (!token) {
       toast({
         title: "Error",
         variant: "destructive",
@@ -41,7 +42,7 @@ export function EventDeleteDialogBox({
       // Configure headers with Authorization token
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
 
