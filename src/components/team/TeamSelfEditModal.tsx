@@ -273,7 +273,7 @@ export function TeamSelfEditModal({ initialTeamId, onClose, onRefresh }: TeamSel
                 </div>
 
                 <div className="rounded-xl border border-muted bg-muted/30 p-3">
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-foreground/70 leading-relaxed">
                     <strong>Already registered before this update?</strong><br />
                     Contact{" "}
                     <a
