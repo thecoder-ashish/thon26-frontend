@@ -129,12 +129,12 @@ export function AdminTeamTable() {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="uppercase text-center font-bold">{row.getValue("team_name")}</div>,
+    cell: ({ row }) => <div className="uppercase text-center font-bold">{row.original.team_name}</div>,
   },
   {
     accessorKey: "team_id",
     header: "Team ID",
-    cell: ({ row }) => <div className="font-mono text-center">#{row.getValue("team_id")}</div>,
+    cell: ({ row }) => <div className="font-mono text-center">#{row.original.team_id}</div>,
   },
   {
     accessorKey: "points",
@@ -151,14 +151,14 @@ export function AdminTeamTable() {
       )
     },
     cell: ({ row }) => {
-      const points = parseFloat(row.getValue("points"))
+      const points = parseFloat(String(row.original.points));
       return (
         <div className="flex items-center justify-center">
           <div className="uppercase flex w-2 justify-end text-right items-center font-mono font-bold">{points}</div>
           <PointsUpdateDialog 
-            points={row.getValue("points")} 
-            team_id={row.getValue("team_id")} 
-            team_name={row.getValue("team_name")}
+            points={row.original.points} 
+            team_id={row.original.team_id} 
+            team_name={row.original.team_name}
             onPointsUpdated={fetchTeamData} 
           />
         </div>
@@ -166,19 +166,20 @@ export function AdminTeamTable() {
     },
   },
   {
-    accessorKey: "details",
+    id: "actions",
     header: () => {
       return (
-        <div className="flex justify-center font-bold">
+        <div className="flex justify-center font-bold text-center">
           Actions
         </div>
       )
     },
+    enableHiding: false,
     cell: ({ row }) => {
-      const teamId = row.getValue("team_id") as number;
-      const teamName = row.getValue("team_name") as string;
+      const teamId = row.original.team_id;
+      const teamName = row.original.team_name;
       return (
-        <div className="flex items-center justify-center text-center">
+        <div className="flex items-center justify-center text-center gap-1.5">
           <TeamDetailsDialog team_id={String(teamId)} team_name={teamName} />
           {!isPoc && (
             <TeamDeleteDialog
