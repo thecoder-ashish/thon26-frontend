@@ -18,8 +18,8 @@ import {
 } from "@tanstack/react-table"
 import axios from "axios"
 import FileSaver from 'file-saver';
-import { TeamDetailsDialog } from "./team/TeamViewDetail"
-import { TeamDeleteDialog } from "./team/TeamDeleteDialog"
+import { TeamDetailsDialog } from "./Team/TeamViewDetail"
+import { TeamDeleteDialog } from "./Team/TeamDeleteDialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
