@@ -108,7 +108,7 @@ function RegisterForm({ numberOfMembers, teamName }) {
         return;
       }
 
-      // ONLY Team Leader requires Email & Phone
+      // ONLY Team Leader requires Email & Phone & Password
       if (isLeader) {
         if (!member.email || !member.email.trim()) {
           toast({
@@ -142,6 +142,25 @@ function RegisterForm({ numberOfMembers, teamName }) {
             variant: "destructive",
             title: "Invalid Phone Number",
             description: `Ensure the phone number for Team Leader (${member.name}) is exactly 10 digits.`,
+          });
+          return;
+        }
+
+        // Password validation
+        if (!member.password || member.password.trim().length < 4) {
+          toast({
+            variant: "destructive",
+            title: "Password Required",
+            description: "Please set a team password (minimum 4 characters). You'll use this to edit your team later.",
+          });
+          return;
+        }
+
+        if (member.password !== member.confirmPassword) {
+          toast({
+            variant: "destructive",
+            title: "Passwords Don't Match",
+            description: "The team password and confirmation password do not match.",
           });
           return;
         }
@@ -198,9 +217,11 @@ function RegisterForm({ numberOfMembers, teamName }) {
   };
 
   const submitTeam = (recaptchaToken) => {
+    const leader = members[0] || {};
     const teamDetails = {
       teamName: teamName,
       members: members,
+      password: leader.password,
       recaptchaToken: recaptchaToken,
     };
 

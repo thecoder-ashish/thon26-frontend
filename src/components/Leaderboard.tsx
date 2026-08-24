@@ -32,7 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, Trash2, AlertTriangle } from "lucide-react";
+import { Search, Trash2, AlertTriangle, Pencil } from "lucide-react";
+import { TeamSelfEditModal } from "@/components/team/TeamSelfEditModal";
 import { getBackendUrl } from "@/lib/api";
 import { useAuth } from "@/components/auth/auth";
 import { useToast } from "@/components/ui/use-toast";
@@ -62,6 +63,7 @@ export function Leaderboard() {
   const [showModal, setShowModal] = React.useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [showEditModal, setShowEditModal] = React.useState(false);
 
   // Sort by points descending, break ties with team_id ascending (e.g. #1001 first)
   const sortedTeams = React.useMemo(() => {
@@ -501,7 +503,18 @@ export function Leaderboard() {
 
             {/* Modal Footer */}
             {!showConfirmDelete && (
-              <div className="pt-2 flex items-center gap-2">
+              <div className="pt-2 flex flex-col gap-2">
+                {!user && (
+                  <Button
+                    variant="outline"
+                    onClick={() => { setShowModal(false); setShowEditModal(true); }}
+                    className="w-full py-5 text-xs sm:text-sm font-bold tracking-wide font-raleway gap-1.5 border-primary/40 text-primary hover:bg-primary/10"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Edit Your Team
+                  </Button>
+                )}
+                <div className="flex items-center gap-2">
                 {isAdmin && (
                   <Button
                     variant="destructive"
@@ -520,10 +533,19 @@ export function Leaderboard() {
                 >
                   Close Roster
                 </Button>
+                </div>
               </div>
             )}
           </div>
         </div>
+      )}
+      {/* Team Self-Edit Modal - visible to non-admin users */}
+      {showEditModal && selectedTeam && (
+        <TeamSelfEditModal
+          initialTeamId={selectedTeam.id}
+          onClose={() => setShowEditModal(false)}
+          onRefresh={fetchTeamData}
+        />
       )}
     </div>
   );

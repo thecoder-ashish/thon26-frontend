@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef } from "react";
 import { CSSTransition } from "react-transition-group";
-import { Plus } from "lucide-react";
+import { Plus, Eye, EyeOff } from "lucide-react";
 import "../styles/transition.css";
 import clsx from "clsx";
 
@@ -14,6 +14,10 @@ const RegisterBlock = forwardRef(
     const [email, setEmail] = useState(member.email || "");
     const [phone, setPhone] = useState(member.phone || "");
     const [rollno, setRollno] = useState(member.rollno || "");
+    const [password, setPassword] = useState(member.password || "");
+    const [confirmPassword, setConfirmPassword] = useState(member.confirmPassword || "");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const isLeader = index === 1;
 
@@ -23,8 +27,10 @@ const RegisterBlock = forwardRef(
         email: isLeader ? email : "",
         phone: isLeader ? phone : "",
         rollno,
+        password: isLeader ? password : "",
+        confirmPassword: isLeader ? confirmPassword : "",
       });
-    }, [name, email, phone, rollno, isLeader]);
+    }, [name, email, phone, rollno, password, confirmPassword, isLeader]);
 
     return (
       <div className="flex justify-between gap-2 h-full">
@@ -117,6 +123,66 @@ const RegisterBlock = forwardRef(
                   onChange={(e) => setRollno(e.target.value.toUpperCase())}
                   className="outline-none bg-transparent p-1 font-bold w-full text-lg md:text-xl"
                 />
+
+                {/* Password fields — leader only */}
+                {isLeader && (
+                  <>
+                    <div className="relative flex items-center">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="SET TEAM PASSWORD (min. 4 chars)"
+                        className="outline-none bg-transparent p-1 font-bold w-full text-lg md:text-xl pr-8"
+                        value={password}
+                        maxLength="50"
+                        required
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-1 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    <div className="relative flex items-center">
+                      <input
+                        type={showConfirm ? "text" : "password"}
+                        placeholder="CONFIRM TEAM PASSWORD"
+                        className="outline-none bg-transparent p-1 font-bold w-full text-lg md:text-xl pr-8"
+                        value={confirmPassword}
+                        maxLength="50"
+                        required
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirm(!showConfirm)}
+                        className="absolute right-1 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showConfirm ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    {password && confirmPassword && password !== confirmPassword && (
+                      <p className="text-xs text-red-500 font-bold pl-1">
+                        ✕ Passwords do not match
+                      </p>
+                    )}
+                    {password && confirmPassword && password === confirmPassword && (
+                      <p className="text-xs text-green-500 font-bold pl-1">
+                        ✓ Passwords match
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </CSSTransition>
