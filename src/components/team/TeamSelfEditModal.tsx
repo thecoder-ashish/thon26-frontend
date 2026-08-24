@@ -104,8 +104,8 @@ export function TeamSelfEditModal({ initialTeamId, onClose, onRefresh }: TeamSel
 
   const handleAddMember = () => {
     const activeCount = members.filter((m) => !removedIds.includes(m.team_member_id)).length;
-    if (activeCount + newMembers.length >= 6) {
-      toast({ variant: "destructive", title: "Maximum 6 Members", description: "A team cannot have more than 6 members." });
+    if (activeCount + newMembers.length >= 5) {
+      toast({ variant: "destructive", title: "Maximum 5 Members", description: "A team cannot have more than 5 members." });
       return;
     }
     setNewMembers((prev) => [...prev, { name: "", rollno: "" }]);
@@ -318,9 +318,9 @@ export function TeamSelfEditModal({ initialTeamId, onClose, onRefresh }: TeamSel
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">
-                    Roster ({totalCount}/6)
+                    Roster ({totalCount}/5)
                   </label>
-                  {totalCount < 6 && (
+                  {totalCount < 5 && (
                     <button
                       onClick={handleAddMember}
                       className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
