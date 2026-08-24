@@ -26,17 +26,17 @@ import {
   RefreshCw,
   Clock,
   User,
-  ShieldAlert,
   Trophy,
   PlusCircle,
   Edit3,
   Trash2,
   Sliders,
-  ChevronRight,
   X,
   FileText,
+  UserMinus,
 } from "lucide-react";
 import { getBackendUrl } from "@/lib/api";
+import { useAuth } from "@/components/auth/auth";
 
 export type AuditLog = {
   log_id: number;
@@ -49,6 +49,7 @@ export type AuditLog = {
 };
 
 export function AdminLogsTable() {
+  const { user } = useAuth();
   const [logs, setLogs] = React.useState<AuditLog[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "created_at", desc: true },
@@ -65,7 +66,10 @@ export function AdminLogsTable() {
   const fetchLogs = () => {
     setIsLoading(true);
     const backendUrl = getBackendUrl();
-    const token = localStorage.getItem("accessToken");
+    const token =
+      user?.token ||
+      localStorage.getItem("jwt") ||
+      localStorage.getItem("accessToken");
 
     axios
       .get(`${backendUrl}/logs`, {
@@ -74,7 +78,7 @@ export function AdminLogsTable() {
         },
       })
       .then((response) => {
-        setLogs(response.data);
+        setLogs(Array.isArray(response.data) ? response.data : []);
       })
       .catch((error) => {
         console.error("Error fetching audit logs:", error);
@@ -86,7 +90,7 @@ export function AdminLogsTable() {
 
   React.useEffect(() => {
     fetchLogs();
-  }, []);
+  }, [user]);
 
   const formatTimestamp = (dateString: string) => {
     if (!dateString) return "-";
@@ -115,6 +119,13 @@ export function AdminLogsTable() {
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">
             <Sliders className="h-3 w-3 shrink-0" />
             POINTS EDIT
+          </span>
+        );
+      case "TEAM_DELETE":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-black bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30">
+            <UserMinus className="h-3 w-3 shrink-0" />
+            TEAM DELETE
           </span>
         );
       case "EVENT_CREATE":
@@ -254,6 +265,46 @@ export function AdminLogsTable() {
       typeof log.details === "string" ? JSON.parse(log.details) : log.details || {};
 
     switch (log.action_type) {
+      case "TEAM_DELETE":
+        return (
+          <div className="space-y-4">
+            <div className="rounded-2xl border p-4 bg-red-500/10 border-red-500/30 space-y-1.5">
+              <span className="text-[10px] font-black tracking-wider text-red-600 dark:text-red-400 uppercase block">
+                Deleted Team
+              </span>
+              <div className="flex justify-between items-center">
+                <p className="font-extrabold font-raleway text-foreground text-base">
+                  {details.deleted_team?.team_name || "Unknown Team"}
+                </p>
+                <p className="text-xs font-mono text-muted-foreground">
+                  ID: #{details.deleted_team?.team_id}
+                </p>
+              </div>
+            </div>
+
+            {details.deleted_members && details.deleted_members.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[10px] font-black tracking-wider text-muted-foreground uppercase block">
+                  Deleted Roster ({details.deleted_members.length} Members)
+                </span>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {details.deleted_members.map((m: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center p-2.5 rounded-xl border bg-muted/20 text-xs"
+                    >
+                      <span className="font-bold font-raleway">{m.member_name}</span>
+                      <span className="text-muted-foreground font-mono text-[11px]">
+                        {m.roll_no || ""} {m.phone_number ? `• ${m.phone_number}` : ""}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
       case "POINTS_UPDATE":
         return (
           <div className="space-y-4">
@@ -503,7 +554,7 @@ export function AdminLogsTable() {
         </Table>
       </div>
 
-      {/* Log Detail Modal (Matching Leaderboard Modal Design) */}
+      {/* Log Detail Modal */}
       {showModal && selectedLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           {/* Backdrop Blur */}
