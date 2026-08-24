@@ -275,9 +275,18 @@ export function TeamSelfEditModal({ initialTeamId, onClose, onRefresh }: TeamSel
                 <div className="rounded-xl border border-muted bg-muted/30 p-3">
                   <p className="text-[10px] text-muted-foreground leading-relaxed">
                     <strong>Already registered before this update?</strong><br />
-                    Your default password is: <span className="font-mono text-foreground">1st letter of team name</span> + <span className="font-mono text-foreground">1st 2 letters of your name</span> + <span className="font-mono text-foreground">last 4 digits of your roll no.</span><br />
-                    Example: Team <em>OMEGA</em>, Leader <em>ARJUN</em>, Roll <em>2026UCA1234</em> → <strong className="font-mono text-foreground">OAR1234</strong>
+                    Contact{" "}
+                    <a
+                      href="https://wa.me/916206814632"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary font-bold underline underline-offset-2 hover:text-primary/80 transition-colors"
+                    >
+                      Ashish on WhatsApp
+                    </a>
+                    {" "}to access your account.
                   </p>
+                </div>
                 </div>
               </div>
 
