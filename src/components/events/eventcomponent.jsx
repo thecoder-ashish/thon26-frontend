@@ -51,13 +51,17 @@ const EventGrid = ({ openTab }) => {
 
   const filteredEvents = React.useMemo(() => {
     const list = events.filter((event) => event.day_number === openTab);
-    // Pin featured event (Boards & Bonds) to the very top (#1)
+    // Pin featured events (Boards on Day 1, Bad Advice on Day 2) to the very top (#1)
     return list.sort((a, b) => {
-      const isASponsored = a.event_name?.toLowerCase().includes("boards & bonds");
-      const isBSponsored = b.event_name?.toLowerCase().includes("boards & bonds");
+      const isAFeatured =
+        a.event_name?.toLowerCase().includes("boards") ||
+        a.event_name?.toLowerCase().includes("bad advice");
+      const isBFeatured =
+        b.event_name?.toLowerCase().includes("boards") ||
+        b.event_name?.toLowerCase().includes("bad advice");
 
-      if (isASponsored && !isBSponsored) return -1;
-      if (!isASponsored && isBSponsored) return 1;
+      if (isAFeatured && !isBFeatured) return -1;
+      if (!isAFeatured && isBFeatured) return 1;
       return 0;
     });
   }, [events, openTab]);
@@ -75,13 +79,15 @@ const EventGrid = ({ openTab }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
       {filteredEvents.map((event) => {
-        const isSponsored = event.event_name?.toLowerCase().includes("boards & bonds");
+        const isBoards = event.event_name?.toLowerCase().includes("boards");
+        const isBadAdvice = event.event_name?.toLowerCase().includes("bad advice");
+        const isFeatured = isBoards || isBadAdvice;
 
         return (
           <div
             key={event.event_id}
             className={`group relative flex flex-col justify-between rounded-xl sm:rounded-2xl border overflow-hidden cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ${
-              isSponsored
+              isFeatured
                 ? "bg-card/90 border-amber-500/80 ring-1 ring-amber-500/50 shadow-amber-500/10 hover:border-amber-400"
                 : "bg-card/60 hover:border-foreground/20"
             }`}
@@ -139,17 +145,24 @@ const EventGrid = ({ openTab }) => {
                 }}
               />
 
-              {/* Sponsored / 2X Points Badge (Positioned at bottom-left to prevent collision with top-right time pill) */}
-              {isSponsored && (
+              {/* Bonus Points Badge (Positioned at bottom-left to prevent collision with top-right time pill) */}
+              {isBoards && (
                 <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
                   <span>⭐</span>
                   <span>2X POINTS*</span>
                 </div>
               )}
 
+              {isBadAdvice && (
+                <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
+                  <span>⭐</span>
+                  <span>3X POINTS*</span>
+                </div>
+              )}
+
               {/* Time Pill Badge (Top-Right) */}
               <div className="absolute top-2.5 right-2.5 bg-black/75 dark:bg-black/85 text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border border-white/15 shadow-sm backdrop-blur-sm">
-                {isSponsored ? (
+                {isBoards ? (
                   <span className="text-[10px] sm:text-xs font-raleway font-bold">
                     10 AM - 4 PM
                   </span>
@@ -164,12 +177,12 @@ const EventGrid = ({ openTab }) => {
               {event.society_name && (
                 <p
                   className={`text-[11px] font-black uppercase tracking-wider line-clamp-1 ${
-                    isSponsored
+                    isFeatured
                       ? "text-amber-500 dark:text-amber-400 flex items-center gap-1"
                       : "text-muted-foreground"
                   }`}
                 >
-                  {isSponsored
+                  {isFeatured
                     ? `⭐ Presented by ${event.society_name || "Crosslinks"}`
                     : event.society_name}
                 </p>
