@@ -59,6 +59,10 @@ export function EventScoringPanel() {
   const [firstPlaceId, setFirstPlaceId] = useState<string>("");
   const [secondPlaceId, setSecondPlaceId] = useState<string>("");
   const [thirdPlaceId, setThirdPlaceId] = useState<string>("");
+  // Filters for searchable selects
+  const [firstFilter, setFirstFilter] = useState<string>("");
+  const [secondFilter, setSecondFilter] = useState<string>("");
+  const [thirdFilter, setThirdFilter] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -89,6 +93,13 @@ export function EventScoringPanel() {
 
     fetchData();
   }, []);
+
+  // Clear any open filters when participant list changes
+  useEffect(() => {
+    setFirstFilter("");
+    setSecondFilter("");
+    setThirdFilter("");
+  }, [participantIds.length]);
 
   // Helper to add typed team IDs (comma / space / enter separated)
   const handleAddTypedTeams = () => {
@@ -391,12 +402,26 @@ export function EventScoringPanel() {
                   <SelectValue placeholder="Select 1st Place..." />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="px-2 pb-2">
+                    <Input
+                      placeholder="Type to filter teams..."
+                      value={firstFilter}
+                      onChange={(e) => setFirstFilter(e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
                   <SelectItem value="none">-- None --</SelectItem>
-                  {participantIds.map((id) => (
-                    <SelectItem key={id} value={id.toString()}>
-                      #{id} - {getTeamName(id)}
-                    </SelectItem>
-                  ))}
+                  {participantIds
+                    .filter((id) =>
+                      (`#${id} - ${getTeamName(id)}`)
+                        .toLowerCase()
+                        .includes(firstFilter.trim().toLowerCase())
+                    )
+                    .map((id) => (
+                      <SelectItem key={id} value={id.toString()}>
+                        #{id} - {getTeamName(id)}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -412,12 +437,26 @@ export function EventScoringPanel() {
                   <SelectValue placeholder="Select 2nd Place..." />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="px-2 pb-2">
+                    <Input
+                      placeholder="Type to filter teams..."
+                      value={secondFilter}
+                      onChange={(e) => setSecondFilter(e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
                   <SelectItem value="none">-- None --</SelectItem>
-                  {participantIds.map((id) => (
-                    <SelectItem key={id} value={id.toString()}>
-                      #{id} - {getTeamName(id)}
-                    </SelectItem>
-                  ))}
+                  {participantIds
+                    .filter((id) =>
+                      (`#${id} - ${getTeamName(id)}`)
+                        .toLowerCase()
+                        .includes(secondFilter.trim().toLowerCase())
+                    )
+                    .map((id) => (
+                      <SelectItem key={id} value={id.toString()}>
+                        #{id} - {getTeamName(id)}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -433,12 +472,26 @@ export function EventScoringPanel() {
                   <SelectValue placeholder="Select 3rd Place..." />
                 </SelectTrigger>
                 <SelectContent>
+                  <div className="px-2 pb-2">
+                    <Input
+                      placeholder="Type to filter teams..."
+                      value={thirdFilter}
+                      onChange={(e) => setThirdFilter(e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
                   <SelectItem value="none">-- None --</SelectItem>
-                  {participantIds.map((id) => (
-                    <SelectItem key={id} value={id.toString()}>
-                      #{id} - {getTeamName(id)}
-                    </SelectItem>
-                  ))}
+                  {participantIds
+                    .filter((id) =>
+                      (`#${id} - ${getTeamName(id)}`)
+                        .toLowerCase()
+                        .includes(thirdFilter.trim().toLowerCase())
+                    )
+                    .map((id) => (
+                      <SelectItem key={id} value={id.toString()}>
+                        #{id} - {getTeamName(id)}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
