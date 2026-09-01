@@ -93,6 +93,8 @@ const EventDetails = () => {
 
   const isBoards = eventDetails.event_name?.toLowerCase().includes("boards");
   const isBadAdvice = eventDetails.event_name?.toLowerCase().includes("bad advice");
+  const isBadAdvice2x = isBadAdvice && (String(eventDetails.event_id) === "43" || eventDetails.event_id === 43 || String(event_id) === "43");
+  const isBadAdvice3x = isBadAdvice && !isBadAdvice2x;
   const isFeatured = isBoards || isBadAdvice;
 
   const compressedUrl = eventDetails.banner_url_1_compressed && eventDetails.banner_url_1_compressed.startsWith("posters/")
@@ -299,13 +301,27 @@ const EventDetails = () => {
               </div>
               <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
                 Participate in <strong>Boards & Bonds: Board Game Party</strong> to score bonus points towards the overall NSUTTHON 2026 leaderboard. 
-                Scores awarded in this event have <strong>upto a 2X multiplier</strong> applied to boost your team's festival standings!
+                Scores awarded in this event have <strong>upto a 2X multiplier</strong> applied to boost your team's standings!
+              </p>
+            </div>
+          )}
+
+          {/* Bad Advice 2X Participation Points Callout Card (Event ID 43) */}
+          {isBadAdvice2x && (
+            <div className="p-4 sm:p-5 rounded-2xl border border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-sm space-y-2 mt-4 shadow-sm">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm sm:text-base font-raleway uppercase tracking-wider">
+                <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+                <span>2X PARTICIPATION POINTS*</span>
+              </div>
+              <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
+                Participate in <strong>{eventDetails.event_name || "Bad Advice"}</strong> to score bonus participation points towards the overall NSUTTHON 2026 leaderboard. 
+                Participation in this event awards <strong>2X participation points</strong> to boost your team's standings!
               </p>
             </div>
           )}
 
           {/* Bad Advice 3X Participation Points Callout Card */}
-          {isBadAdvice && (
+          {isBadAdvice3x && (
             <div className="p-4 sm:p-5 rounded-2xl border border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-sm space-y-2 mt-4 shadow-sm">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm sm:text-base font-raleway uppercase tracking-wider">
                 <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
@@ -313,7 +329,7 @@ const EventDetails = () => {
               </div>
               <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
                 Participate in <strong>{eventDetails.event_name || "Bad Advice"}</strong> to score bonus participation points towards the overall NSUTTHON 2026 leaderboard. 
-                Participation in this event awards <strong>3X participation points</strong> to boost your team's festival standings!
+                Participation in this event awards <strong>3X participation points</strong> to boost your team's standings!
               </p>
             </div>
           )}

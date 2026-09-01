@@ -81,6 +81,8 @@ const EventGrid = ({ openTab }) => {
       {filteredEvents.map((event) => {
         const isBoards = event.event_name?.toLowerCase().includes("boards");
         const isBadAdvice = event.event_name?.toLowerCase().includes("bad advice");
+        const isBadAdvice2x = isBadAdvice && (String(event.event_id) === "43" || event.event_id === 43);
+        const isBadAdvice3x = isBadAdvice && !isBadAdvice2x;
         const isFeatured = isBoards || isBadAdvice;
 
         return (
@@ -146,14 +148,14 @@ const EventGrid = ({ openTab }) => {
               />
 
               {/* Bonus Points Badge (Positioned at bottom-left to prevent collision with top-right time pill) */}
-              {isBoards && (
+              {(isBoards || isBadAdvice2x) && (
                 <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
                   <span>⭐</span>
                   <span>2X POINTS*</span>
                 </div>
               )}
 
-              {isBadAdvice && (
+              {isBadAdvice3x && (
                 <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
                   <span>⭐</span>
                   <span>3X POINTS*</span>
