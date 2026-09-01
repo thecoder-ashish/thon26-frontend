@@ -92,10 +92,11 @@ const EventDetails = () => {
   };
 
   const isBoards = eventDetails.event_name?.toLowerCase().includes("boards");
-  const isBadAdvice = eventDetails.event_name?.toLowerCase().includes("bad advice");
+  const isEvent44 = String(eventDetails.event_id) === "44" || eventDetails.event_id === 44 || String(event_id) === "44";
+  const isBadAdvice = eventDetails.event_name?.toLowerCase().includes("bad advice") && !isEvent44;
   const isBadAdvice2x = isBadAdvice && (String(eventDetails.event_id) === "43" || eventDetails.event_id === 43 || String(event_id) === "43");
   const isBadAdvice3x = isBadAdvice && !isBadAdvice2x;
-  const isFeatured = isBoards || isBadAdvice;
+  const isFeatured = isBoards || isBadAdvice || isEvent44;
 
   const compressedUrl = eventDetails.banner_url_1_compressed && eventDetails.banner_url_1_compressed.startsWith("posters/")
     ? "/" + eventDetails.banner_url_1_compressed
@@ -330,6 +331,52 @@ const EventDetails = () => {
               <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed">
                 Participate in <strong>{eventDetails.event_name || "Bad Advice"}</strong> to score bonus participation points towards the overall NSUTTHON 2026 leaderboard. 
                 Participation in this event awards <strong>3X participation points</strong> to boost your team's standings!
+              </p>
+            </div>
+          )}
+
+          {/* Gaming Tournament 2X Points & Prizes Callout Card (Event ID 44) */}
+          {isEvent44 && (
+            <div className="p-4 sm:p-6 rounded-2xl border border-amber-500/60 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-amber-950/20 backdrop-blur-md space-y-4 mt-4 shadow-lg shadow-amber-500/10">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-amber-500/20">
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-base sm:text-lg font-raleway uppercase tracking-wider">
+                  <span>💥 GAMING TOURNAMENT</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 text-xs font-black tracking-wider uppercase">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                  <span>2X POINTS*</span>
+                </div>
+              </div>
+
+              {/* Prize Pool Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3">
+                  <span className="text-2xl">🥇</span>
+                  <div>
+                    <p className="text-[11px] font-black uppercase text-amber-600 dark:text-amber-400">1st Prize</p>
+                    <p className="text-xs sm:text-sm font-black text-foreground">Product worth up to ₹3,000</p>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-400/10 border border-slate-400/30 flex items-center gap-3">
+                  <span className="text-2xl">🥈</span>
+                  <div>
+                    <p className="text-[11px] font-black uppercase text-muted-foreground">2nd Prize</p>
+                    <p className="text-xs sm:text-sm font-black text-foreground">Product worth up to ₹2,000</p>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-amber-700/10 border border-amber-700/30 flex items-center gap-3">
+                  <span className="text-2xl">🥉</span>
+                  <div>
+                    <p className="text-[11px] font-black uppercase text-amber-700 dark:text-amber-500">3rd Prize</p>
+                    <p className="text-xs sm:text-sm font-black text-foreground">Product worth up to ₹1,000</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-foreground/90 font-medium leading-relaxed pt-1">
+                Participate in <strong>{eventDetails.event_name || "Gaming Tournament"}</strong> to win exciting prizes worth up to <strong>₹3,000</strong> and earn <strong>2X points</strong> towards your team's NSUTTHON 2026 leaderboard standings!
               </p>
             </div>
           )}

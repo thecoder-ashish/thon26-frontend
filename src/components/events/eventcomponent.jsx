@@ -51,14 +51,18 @@ const EventGrid = ({ openTab }) => {
 
   const filteredEvents = React.useMemo(() => {
     const list = events.filter((event) => event.day_number === openTab);
-    // Pin featured events (Boards on Day 1, Bad Advice on Day 2) to the very top (#1)
+    // Pin featured events (Boards, Bad Advice, Event 44) to the very top (#1)
     return list.sort((a, b) => {
       const isAFeatured =
         a.event_name?.toLowerCase().includes("boards") ||
-        a.event_name?.toLowerCase().includes("bad advice");
+        a.event_name?.toLowerCase().includes("bad advice") ||
+        String(a.event_id) === "44" ||
+        a.event_id === 44;
       const isBFeatured =
         b.event_name?.toLowerCase().includes("boards") ||
-        b.event_name?.toLowerCase().includes("bad advice");
+        b.event_name?.toLowerCase().includes("bad advice") ||
+        String(b.event_id) === "44" ||
+        b.event_id === 44;
 
       if (isAFeatured && !isBFeatured) return -1;
       if (!isAFeatured && isBFeatured) return 1;
@@ -80,10 +84,11 @@ const EventGrid = ({ openTab }) => {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
       {filteredEvents.map((event) => {
         const isBoards = event.event_name?.toLowerCase().includes("boards");
-        const isBadAdvice = event.event_name?.toLowerCase().includes("bad advice");
+        const isEvent44 = String(event.event_id) === "44" || event.event_id === 44;
+        const isBadAdvice = event.event_name?.toLowerCase().includes("bad advice") && !isEvent44;
         const isBadAdvice2x = isBadAdvice && (String(event.event_id) === "43" || event.event_id === 43);
         const isBadAdvice3x = isBadAdvice && !isBadAdvice2x;
-        const isFeatured = isBoards || isBadAdvice;
+        const isFeatured = isBoards || isBadAdvice || isEvent44;
 
         return (
           <div
@@ -159,6 +164,19 @@ const EventGrid = ({ openTab }) => {
                 <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider z-10 animate-pulse">
                   <span>⭐</span>
                   <span>3X POINTS*</span>
+                </div>
+              )}
+
+              {isEvent44 && (
+                <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1 z-10">
+                  <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[8.5px] sm:text-[10px] font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider animate-pulse">
+                    <span>⭐</span>
+                    <span>2X POINTS*</span>
+                  </div>
+                  <div className="bg-gradient-to-r from-amber-400 to-yellow-300 text-black text-[8.5px] sm:text-[10px] font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider">
+                    <span>🏆</span>
+                    <span>PRIZES UPTO ₹3,000</span>
+                  </div>
                 </div>
               )}
 
